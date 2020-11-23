@@ -8,6 +8,12 @@
 !.vscode/launch.json
 *.code-workspace
 
+node_modules
+build
+npm-debug.log
+.env
+.DS_Store
+
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
