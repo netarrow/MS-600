@@ -39,6 +39,7 @@
 
         var graphConfig = {
             graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
+            graphClaimsEndpoint: "https://graph.microsoft.com/v1.0/me/appRoleAssignments",
             requestObj: {
                 scopes: ["user.read"]
             }
@@ -106,8 +107,25 @@
             xmlHttp.send();
         }
 
+        function getClaimsFromMSGraph(accessToken, callback) {
+            var endpoint = graphConfig.graphClaimsEndpoint;
+
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    callback(JSON.parse(this.responseText));
+            }
+            xmlHttp.open("GET", endpoint, true);
+            xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xmlHttp.send();
+        }
+
         function graphAPICallback(data) {
             document.getElementById("json").innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function logResponse(data) {
+            console.log(JSON.stringify(data, null, 2))
         }
 
         function updateUserInterface() {
@@ -126,6 +144,7 @@
             msalApplication.acquireTokenSilent(request)
                 .then(function (tokenResponse) {
                     getUserFromMSGraph(tokenResponse.accessToken, graphAPICallback);
+                    getClaimsFromMSGraph(tokenResponse.accessToken, logResponse )
                 })
                 .catch(function (error) {
                     console.log("silent token acquisition fails.");
@@ -134,6 +153,7 @@
                             msalApplication.acquireTokenPopup(request)
                                 .then(function (tokenResponse) {
                                     getUserFromMSGraph(tokenResponse.accessToken, graphAPICallback);
+                                    getClaimsFromMSGraph(tokenResponse.accessToken, logResponse )
                                 })
                                 .catch(function (error) { console.error(error); }
                                 );
