@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Getting Started with Microsoft identity</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.7.2/bluebird.min.js"></script>
+    <script src="https://alcdn.msauth.net/browser/2.1.0/js/msal-browser.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <p id="WelcomeMessage">Microsoft Authentication Library For Javascript (MSAL.js) Exercise</p>
+            <button id="SignIn" onclick="signIn()">Sign In</button>
+        </div>
+        <div>
+            <pre id="json"></pre>
+        </div>
+        <div>
+            <p id="WelcomeMessage">Microsoft Authentication Library For Javascript (MSAL.js) Exercise</p>
+            <button id="GetEmails" onclick="getEmails()">Get Emails</button>
+            <div>
+                <pre id="emails"></pre>
+            </div>
+            <button id="GetCalendar" onclick="getCalendars()">Get Calendar</button>
+            <div>
+                <pre id="calendars"></pre>
+            </div>
+        </div>
+    </div>
+    <script>
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf('MSIE ');
+        var msie11 = ua.indexOf('Trident/');
+        var msedge = ua.indexOf('Edge/');
+        var isIE = msie > 0 || msie11 > 0;
+        var isEdge = msedge > 0;
+
+        var msalConfig = {
+            auth: {
+                clientId: '0055ae2f-3782-474e-82f8-ed24982c15c6',
+                authority: 'https://login.microsoftonline.com/39076c6b-ee10-466c-b264-14a5350b127e',
+                redirectURI: 'http://localhost:3007'
+            },
+            cache: {
+                cacheLocation: "localStorage",
+                storeAuthStateInCookie: isIE || isEdge
+            }
+        };
+
+        var graphConfig = {
+            graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
+            graphMailEndpoint: "https://graph.microsoft.com/v1.0/me/messages",
+            graphCalendarEndpoint: "https://graph.microsoft.com/v1.0/me/calendars",
+            graphClaimsEndpoint: "https://graph.microsoft.com/v1.0/me/appRoleAssignments",
+            requestObj: {
+                scopes: ["user.read"]
+            },
+            requestObjIncrMail: {
+                scopes: ["user.read", "mail.read"]
+            },
+            requestObjIncrCalendar: {
+                scopes: ["user.read", "mail.read", "calendars.read"]
+            }
+        };        
+
+        var msalApplication = new msal.PublicClientApplication(msalConfig);
+        var userName = "";
+        var loginType = isIE ? "REDIRECT" : "POPUP";
+
+
+        // TODO: add CODE before this line
+
+        msalApplication.handleRedirectPromise()
+            .then(handleResponse)
+            .catch(function (error) { console.log(error); }
+            );
+
+        // TODO: add FUNCTIONS before this line
+
+        function handleResponse(loginResponse) {
+            if (loginResponse != null) {
+                userName = loginResponse.account.username;
+            } else {
+                var currentAccounts = msalApplication.getAllAccounts();
+                if (currentAccounts == null || currentAccounts.length == 0) {
+                    return;
+                } else {
+                    userName = currentAccounts[0].username;
+                }
+            }
+
+            updateUserInterface();
+            acquireTokenAndGetUser();
+        }
+
+        function signIn() {
+            if (loginType == "POPUP") {
+                msalApplication.loginPopup(graphConfig.requestObj)
+                    .then(handleResponse)
+                    .catch(function (error) { console.log(error); }
+                    );
+            } else {
+                msalApplication.loginRedirect(graphConfig.requestObj);
+            }
+        }
+
+        function signOut() {
+            var logoutRequest = {
+                account: msalApplication.getAccountByUsername(userName)
+            };
+
+            msalApplication.logout(logoutRequest);
+        }
+
+        function getEmails() {
+            graphConfig.requestObj = graphConfig.requestObjIncrMail
+            acquireTokenAndGetUser();
+        }
+
+        function getCalendars() {
+            graphConfig.requestObj = graphConfig.requestObjIncrCalendar
+            acquireTokenAndGetUser();
+        }
+
+        function executeGraph(endpoint, accessToken, callback) {
+
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    callback(JSON.parse(this.responseText));
+            }
+            xmlHttp.open("GET", endpoint, true);
+            xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xmlHttp.send();
+        }
+
+        function getUserFromMSGraph(accessToken, callback) {
+            var endpoint = graphConfig.graphMeEndpoint;
+
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    callback(JSON.parse(this.responseText));
+            }
+            xmlHttp.open("GET", endpoint, true);
+            xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xmlHttp.send();
+        }
+
+        function getClaimsFromMSGraph(accessToken, callback) {
+            var endpoint = graphConfig.graphClaimsEndpoint;
+
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    callback(JSON.parse(this.responseText));
+            }
+            xmlHttp.open("GET", endpoint, true);
+            xmlHttp.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xmlHttp.send();
+        }
+
+        function graphAPICallback(data) {
+            document.getElementById('json').innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function writeEmails(data) {
+            document.getElementById('emails').innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function writeCalendars(data) {
+            document.getElementById('calendars').innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function logResponse(data) {
+            console.log(JSON.stringify(data, null, 2))
+        }
+
+        function updateUserInterface() {
+            var divWelcome = document.getElementById('WelcomeMessage');
+            divWelcome.innerHTML = 'Welcome <strong>' + userName + '</strong> to Microsoft Graph API';
+
+            var loginbutton = document.getElementById('SignIn');
+            loginbutton.innerHTML = 'Sign Out';
+            loginbutton.setAttribute('onclick', 'signOut();');
+        }
+
+        function acquireTokenAndGetUser() {
+            var request = graphConfig.requestObj;
+            request.account = msalApplication.getAccountByUsername(userName);
+
+            msalApplication.acquireTokenSilent(request)
+                .then(function (tokenResponse) {
+                    getUserFromMSGraph(tokenResponse.accessToken, graphAPICallback);
+                    getClaimsFromMSGraph(tokenResponse.accessToken, logResponse )
+                    executeGraph(graphConfig.graphMailEndpoint, tokenResponse.accessToken, writeEmails );
+                    executeGraph(graphConfig.graphCalendarEndpoint, tokenResponse.accessToken, writeCalendars );
+                })
+                .catch(function (error) {
+                    console.log("silent token acquisition fails.");
+                    if (error instanceof msal.InteractionRequiredAuthError) {
+                        if (loginType == "POPUP") {
+                            msalApplication.acquireTokenPopup(request)
+                                .then(function (tokenResponse) {
+                                    getUserFromMSGraph(tokenResponse.accessToken, graphAPICallback);
+                                    getClaimsFromMSGraph(tokenResponse.accessToken, logResponse )
+                                    executeGraph(graphConfig.graphMailEndpoint, tokenResponse.accessToken, writeEmails );
+                                    executeGraph(graphConfig.graphCalendarEndpoint, tokenResponse.accessToken, writeCalendars );
+                                })
+                                .catch(function (error) { console.error(error); }
+                                );
+                        } else {
+                            msalApplication.acquireTokenRedirect(request);
+                        }
+                    } else {
+                        console.error(error);
+                    }
+                });
+        }
+    </script>
+</body>
+
+</html>
