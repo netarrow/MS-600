@@ -5,6 +5,16 @@
    "version": "0.2.0",
    "configurations": [
        {
+           "name": "Attach",
+           "port": 8181,
+           "request": "attach",
+           "skipFiles": [
+               "<node_internals>/**"
+           ],
+           "type": "pwa-node"
+       },
+   
+       {
            "name": "Deamon",
            "type": "coreclr",
            "request": "launch",
