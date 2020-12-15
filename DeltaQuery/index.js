@@ -7,6 +7,8 @@ require('isomorphic-fetch');
 
 require('dotenv').config();
 
+var globalLink;
+
 var app = express();
 
 // MSAL config
@@ -42,8 +44,20 @@ app.get('/', async function(req, res, next) {
    res.send(result)
 });
 
-async function callGraphApiWithToken(res, token) {
-  var result = await getUserDetails(token)
+
+app.get('/delta', async function(req, res, next) {
+  const clientCredentialRequest = {
+      scopes: ["https://graph.microsoft.com/.default"]
+  };
+  app.locals.msalClient = new msal.ConfidentialClientApplication(msalConfig);
+ let response = await app.locals.msalClient.acquireTokenByClientCredential(clientCredentialRequest)
+ console.log("Response: ", response.accessToken);
+ var result = await callGraphApiWithToken(res, response.accessToken, true)
+ res.send(result)
+});
+
+async function callGraphApiWithToken(res, token, delta) {
+  var result = await getUserDetails(token, delta)
   return result
 }
 
@@ -60,12 +74,23 @@ function getAuthenticatedClient(accessToken) {
   return client;
 }
 
-async function getUserDetails (accessToken) {
+async function getUserDetails (accessToken, delta) {
   const client = getAuthenticatedClient(accessToken);
 
-  const user = await client
-    .api('/users')
+  if(globalLink) {
+    var user = await client
+    .api(globalLink)
+    .select('displayName')
     .get();
+  } else {
+   var user = await client
+    .api('/users' + (delta ? '/delta' : '') + "?$top=5")
+    .select('displayName')
+    .get();
+  }
+
+  globalLink = user['@odata.nextLink'] ||user['@odata.deltaLink']
+
   return user;
 }
 
