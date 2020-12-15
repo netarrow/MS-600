@@ -89,7 +89,7 @@ async function getUserDetails (accessToken, delta) {
     .get();
   }
 
-  globalLink = user['@odata.nextLink'] ||user['@odata.deltaLink']
+  globalLink = user['@odata.nextLink'] || user['@odata.deltaLink']
 
   return user;
 }
