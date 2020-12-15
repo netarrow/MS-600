@@ -1,8 +1,10 @@
 const session = require('express-session');
 const flash = require('connect-flash');
-require("isomorphic-fetch")
 const msal = require('@azure/msal-node');
 const express = require('express')
+var graph = require('@microsoft/microsoft-graph-client');
+require('isomorphic-fetch');
+
 require('dotenv').config();
 
 var app = express();
@@ -36,11 +38,35 @@ app.get('/', async function(req, res, next) {
     app.locals.msalClient = new msal.ConfidentialClientApplication(msalConfig);
    let response = await app.locals.msalClient.acquireTokenByClientCredential(clientCredentialRequest)
    console.log("Response: ", response.accessToken);
-   callGraphApiWithToken(res, response.accessToken)
+   var result = await callGraphApiWithToken(res, response.accessToken)
+   res.send(result)
 });
 
-function callGraphApiWithToken(res, token) {
-  res.send('to call with ' + token)
+async function callGraphApiWithToken(res, token) {
+  var result = await getUserDetails(token)
+  return result
+}
+
+function getAuthenticatedClient(accessToken) {
+  // Initialize Graph client
+  const client = graph.Client.init({
+    // Use the provided access token to authenticate
+    // requests
+    authProvider: (done) => {
+      done(null, accessToken);
+    }
+  });
+
+  return client;
+}
+
+async function getUserDetails (accessToken) {
+  const client = getAuthenticatedClient(accessToken);
+
+  const user = await client
+    .api('/users')
+    .get();
+  return user;
 }
 
 app.listen(3000)
