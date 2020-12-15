@@ -3,12 +3,9 @@ const flash = require('connect-flash');
 require("isomorphic-fetch")
 const msal = require('@azure/msal-node');
 const express = require('express')
-const MicrosoftGraph = require("@microsoft/microsoft-graph-client")
-
 require('dotenv').config();
 
 var app = express();
-
 
 // MSAL config
 const msalConfig = {
@@ -34,26 +31,17 @@ app.locals.users = {};
 
 app.get('/', async function(req, res, next) {
     const clientCredentialRequest = {
-        scopes: ["https://graph.microsoft.com/.default"],
+        scopes: ["https://graph.microsoft.com/.default"]
     };
     app.locals.msalClient = new msal.ConfidentialClientApplication(msalConfig);
-    const options = new MicrosoftGraph.MSALAuthenticationProviderOptions(graphScopes);
-const authProvider = new MicrosoftGraph.ImplicitMSALAuthenticationProvider(app.locals.msalClient, options);
-    let response = await app.locals.msalClient.acquireTokenByClientCredential(clientCredentialRequest)
-    console.log("Response: ", response.accessToken);
-    const optionswrapper = {
-        authProvider, // An instance created from previous step
-    };
-    const client = MicrosoftGraph.Client.initWithMiddleware(optionswrapper);
-    
-   /*  try {
-        let userDetails = await client.api("/me").get();
-        console.log(userDetails);
-        res.send(userDetails)
-    } catch (error) {
-        throw error;
-    } */
+   let response = await app.locals.msalClient.acquireTokenByClientCredential(clientCredentialRequest)
+   console.log("Response: ", response.accessToken);
+   callGraphApiWithToken(res, response.accessToken)
 });
 
-app.listen(8181)
+function callGraphApiWithToken(res, token) {
+  res.send('to call with ' + token)
+}
+
+app.listen(3000)
 console.log('started...')
