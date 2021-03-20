@@ -1,0 +1,54 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+      {
+        "type": "Container",
+        "items": [
+          {
+            "type": "TextBlock",
+            "size": "medium",
+            "isSubtle": true,
+            "text": "Select a planet to insert into the message:"
+          }
+        ]
+      },
+      {
+        "type": "Input.ChoiceSet",
+        "id": "planetSelector",
+        "choices": [{
+            "value": "1",
+            "title": "Mercury",
+            "summary": "Mercury is the smallest and innermost planet in the Solar System. Its orbit around the Sun takes 87.97 days, the shortest of all the planets in the Solar System. It is named after the Roman deity Mercury, the messenger of the gods.",
+            "solarOrbitYears": 0.24,
+            "solarOrbitAvgDistanceKm": 57909050,
+            "numSatellites": 0,
+            "wikiLink": "https://en.wikipedia.org/wiki/Mercury_(planet)",
+            "imageLink": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg",
+            "imageAlt": "NASA/Johns Hopkins University Applied Physics Laboratory/Carnegie Institution of Washington [Public domain]"
+          },
+          {
+            "value": "2",
+            "title": "Venus",
+            "summary": "Venus is the second planet from the Sun. It is named after the Roman goddess of love and beauty. As the second-brightest natural object in the night sky after the Moon, Venus can cast shadows and, rarely, is visible to the naked eye in broad daylight. Venus lies within Earth's orbit, and so never appears to venture far from the Sun, setting in the west just after dusk and rising in the east a bit before dawn.",
+            "solarOrbitYears": 0.62,
+            "solarOrbitAvgDistanceKm": 108208000,
+            "numSatellites": 0,
+            "wikiLink": "https://en.wikipedia.org/wiki/Venus",
+            "imageLink": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg",
+            "imageAlt": "&quot;Image processing by R. Nunes&quot;, link to http://www.astrosurf.com/nunes [Public domain]"
+          }]
+      }
+    ],
+    "actions": [
+      {
+        "type": "Action.Submit",
+        "title": "Insert selected planet",
+        "data":
+        {
+          "submitLocation": "messagingExtensionFetchTask"
+        }
+      }
+    ]
+  }
