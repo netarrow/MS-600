@@ -58,7 +58,8 @@ import {
                     "id": "planetName",
                     "type": "TextBlock",
                     "weight": "bolder",
-                    "size": "medium"
+                    "size": "medium",
+                    "text": action.data.planetSelector == 1 ? "Mercury" : "Venus" // todo get from json
                   }
                 ]
               }]
