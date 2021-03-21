@@ -2,7 +2,7 @@ import {
   TeamsActivityHandler,
   TurnContext,
   MessageFactory,
-  CardFactory, MessagingExtensionAction, MessagingExtensionActionResponse, MessagingExtensionAttachment
+  CardFactory, MessagingExtensionAction, MessagingExtensionActionResponse, MessagingExtensionQuery, MessagingExtensionResponse, MessagingExtensionAttachment
 } from "botbuilder";
  
   
@@ -76,6 +76,44 @@ import {
         default:
           throw new Error("NotImplemented");
       }
+    }
+
+    protected handleTeamsMessagingExtensionQuery(context: TurnContext, query: MessagingExtensionQuery): Promise<MessagingExtensionResponse> {
+      // get the search query
+      let searchQuery = "";
+      console.log('triggered')
+      if (query && query.parameters && query.parameters[0].name === "searchKeyword" && query.parameters[0].value) {
+        searchQuery = query.parameters[0].value.trim().toLowerCase();
+      }
+ console.log(searchQuery)
+      // search results
+      let queryResults: string
+    
+      switch (searchQuery) {
+        case "inner":
+          // get all planets inside asteroid belt
+          queryResults = "interni"
+          break;
+        case "outer":
+          // get all planets outside asteroid belt
+          queryResults = 'esterni'
+          break;
+        default:
+          // get the specified planet
+          queryResults = searchQuery
+      }
+    
+      const searchResultsCards: MessagingExtensionAttachment[] = [CardFactory.heroCard(queryResults, 'una prova', ['https://www.google.it/url?sa=i&url=https%3A%2F%2Fgadgets.ndtv.com%2Fapps%2Fnews%2Fmicrosoft-teams-increase-group-call-limit-250-rollout-mid-may-2223818&psig=AOvVaw08eq738fvFCARsfA77Dre0&ust=1616419606112000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCODZ2Le-we8CFQAAAAAdAAAAABAE'])];
+
+      const response: MessagingExtensionResponse = {
+        composeExtension: {
+          type: "result",
+          attachmentLayout: "list",
+          attachments: searchResultsCards
+        }
+      } as MessagingExtensionResponse;
+    
+      return Promise.resolve(response);
     }
 
   }
