@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "list-full-width-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/listFullWidth/ListFullWidthWebPart.js",
+          "manifest": "./src/webparts/listFullWidth/ListFullWidthWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ListFullWidthWebPartStrings": "lib/webparts/listFullWidth/loc/{locale}.js"
+  }
+}
