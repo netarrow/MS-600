@@ -7,10 +7,6 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
 
-  .list {
-    width: 100%;
-  }
-
   .row {
     @include ms-Grid-row;
     @include ms-fontColor-white;
@@ -20,10 +16,8 @@
 
   .column {
     @include ms-Grid-col;
-    @include ms-lg10;
-    @include ms-xl8;
-    @include ms-xlPush2;
-    @include ms-lgPush1;
+    @include ms-lg12;
+    @include ms-xl12;
   }
 
   .title {

@@ -18,7 +18,6 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
           <div className={ styles.row }>
             <div className={ styles.column }>
             <DetailsList
-                className={ styles.list }
                 items={items}
                 setKey="set"
                 columns={columns}
