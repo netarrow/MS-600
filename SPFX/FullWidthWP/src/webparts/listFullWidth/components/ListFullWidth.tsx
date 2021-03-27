@@ -6,12 +6,14 @@ import { DetailsList, IColumn, buildColumns } from 'office-ui-fabric-react/lib/D
 
 export default class ListFullWidth extends React.Component<IListFullWidthProps, {}> {
   public render(): React.ReactElement<IListFullWidthProps> {
-    const items = [{Id: 1, Nome: 'qq', Desc: 'asdf', Test: 'asdf',
-    Column: '', Another: 'asdfasdfasdf',
+    const items = [{Id: 1, Nome: 'qq',
+     Desc: 'asdf', Test: 'asdf',
+    Column: 'iuy', Another: 'asdfasdfasdf',
     LongText: 'asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfsadfasdfsadfasfasdfsadfasdfasdfasdfasdfsadfsadfsadfasdf',
     ColumnBu: 'qq'
     }]
-    const columns = buildColumns(items);
+    let columns = buildColumns(items);
+    columns.forEach(_ => _.isMultiline = true)
     return (
       <div className={ styles.listFullWidth }>
         <div className={ styles.container }>
