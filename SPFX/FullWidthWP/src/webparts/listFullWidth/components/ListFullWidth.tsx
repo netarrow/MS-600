@@ -12,20 +12,25 @@ import { Separator } from 'office-ui-fabric-react/lib/Separator';
 export default class ListFullWidth extends React.Component<IListFullWidthProps, {}> {
   public render(): React.ReactElement<IListFullWidthProps> {
     const items = [{
-      Id: 1,
-      'Publication Number': 'qq',
-      'Applicant': 'asdf',
-      'Priority Number': 'asdf',
-      'Priority Date': 'iuy',
-      'Class': 'asdfasdfasdf',
-      'Title': "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      'Comment': 'qq'
+      'Publication Number': 'DE 122345',
+      'Applicant': 'JABAN TOBAC',
+      'Priority Number': '123456 DE',
+      'Priority Date': '18/03/1994',
+      'Archive': 'R',
+      'Class': 'VARIE23',
+      'Note': "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      'Comment': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      'Citation': ''
     }]
     const options: IDropdownOption[] = [
       { key: '1', text: 'Tizio' }
     ];
     let columns = buildColumns(items);
-    columns.forEach(_ => _.isMultiline = true)
+    columns.forEach(_ => { _.isMultiline = true; _.isResizable = true })
+    columns.slice(0, 6).forEach(_ => _.maxWidth = 110)
+    columns[7].maxWidth = 400
+    columns[8].maxWidth = 400
+
     const stackTokens: IStackTokens = { childrenGap: 20 };
     return (
       <div className={ styles.listFullWidth }>
@@ -38,9 +43,14 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
                     label="Choose Applicant"
                     options={options}
                 />
+                <TextField label="Pub. Number" />
+                <TextField label="Archive" />
+                <TextField label="Class" />
+                <TextField label="Note" multiline rows={3} />
                 <TextField label="Comment" multiline rows={3} />
             </Stack>
             <PrimaryButton text="Filter" width="300px" style={ {marginTop: 5} } />
+            <PrimaryButton text="Export to Excel" width="300px" style={ {marginTop: 5} } />
             <DetailsList
                 items={items}
                 setKey="set"
