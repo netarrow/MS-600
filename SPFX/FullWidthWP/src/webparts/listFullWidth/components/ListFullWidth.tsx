@@ -18,7 +18,7 @@ ctx: WebPartContext
     // Define the initial state:
     this.state = {
       filtersOpen: false,
-      searchQuery: 'qq'
+      searchQuery: 'patent'
     };
   }
 
@@ -47,7 +47,8 @@ ctx: WebPartContext
     let closeFilterPanel = (value) => {  this.setState({filtersOpen: false }) }
 
     let startSearch = () => {
-      this.ctx.spHttpClient.get(`${this.ctx.pageContext.web.absoluteUrl}/_api/search/query?querytext='${this.state.searchQuery}'`,
+      // (listId:{d05c9be9-3240-4d8d-97ce-73661e43646})
+    this.ctx.spHttpClient.get(`${this.ctx.pageContext.web.absoluteUrl}/_api/search/query?querytext='${this.state.searchQuery}'&querytemplate='{searchTerms}(ListId:"d05c9be9-3240-4d8d-97ce-73661e436460") AND (ContentTypeId:"0x01004A0A37AD0026014E9255720B79270A51006E59C8F7FEFEB84086C16BE71A29BCF2")'&rowlimit=5000&SelectProperties='Title,Patent,ContentTypeId'`,
                             SPHttpClient.configurations.v1)
                             .then((res: SPHttpClientResponse): Promise<{ obj: any }> => {
                               const jsonResponse = res.json();
