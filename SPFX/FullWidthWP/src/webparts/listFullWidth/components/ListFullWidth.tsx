@@ -46,6 +46,8 @@ ctx: WebPartContext
     let openFilterPanel = (value) => {  this.setState({filtersOpen: true }) }
     let closeFilterPanel = (value) => {  this.setState({filtersOpen: false }) }
 
+    let addItem = (value) => {  document.getElementById('openNewItem').click()  }
+
     let startSearch = () => {
 
     this.ctx.spHttpClient.get(`${this.ctx.pageContext.web.absoluteUrl}/_api/search/query?querytext='${this.state.searchQuery}'&querytemplate='{searchTerms}(ListId:"d05c9be9-3240-4d8d-97ce-73661e436460") AND (ContentTypeId:"0x01004A0A37AD0026014E9255720B79270A51006E59C8F7FEFEB84086C16BE71A29BCF2")'&rowlimit=5000&SelectProperties='Title,Patent,ContentTypeId'`,
@@ -77,8 +79,10 @@ ctx: WebPartContext
             <div className={ styles.column }>
             <TextField placeholder="Search Query" />
             <PrimaryButton text="Start Search" onClick={startSearch} width="300px" style={ {margin: 5, marginLeft: 0 } } />
-            <PrimaryButton text="Open Filters" onClick={openFilterPanel} width="300px" style={ {margin: 5, marginLeft: 0 } } />
-            <PrimaryButton text="Export to Excel" width="300px" style={ {marginTop: 5} } />
+            <PrimaryButton text="Open Filters" onClick={openFilterPanel} width="300px" style={ {margin: 5 } } />
+            <PrimaryButton text="Export to Excel" width="300px" style={ {margin: 5} } />
+            <PrimaryButton text="Add New Item" width="300px" onClick={addItem}  style={ {margin: 5} } />
+            <a style={{ display: 'none' }} id="openNewItem" href="https://m365x605511.sharepoint.com/_layouts/15/listform.aspx?PageType=8&ListId=%7BD05C9BE9-3240-4D8D-97CE-73661E436460%7D&RootFolder=%2FLists%2FPatent&Source=https://m365x605511.sharepoint.com/&ContentTypeId=0x01004A0A37AD0026014E9255720B79270A51006E59C8F7FEFEB84086C16BE71A29BCF2">Add Item</a>
             <Panel  isOpen={this.state.filtersOpen}
                     onRenderFooterContent={onRenderFooterContent}
                     isFooterAtBottom={true}
@@ -94,6 +98,7 @@ ctx: WebPartContext
                   <Dropdown placeholder="Class" options={options} />
               </Stack>
             </Panel>
+
             <DetailsList
                 items={items}
                 setKey="set"
