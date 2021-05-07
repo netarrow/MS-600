@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './ListFullWidth.module.scss';
 import { IListFullWidthProps } from './IListFullWidthProps';
-import { DetailsList, IColumn, buildColumns } from 'office-ui-fabric-react/lib/DetailsList';
+import { DetailsList, IColumn, buildColumns, SelectionMode } from 'office-ui-fabric-react/lib/DetailsList';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown'
 import { IStackTokens, Stack } from 'office-ui-fabric-react/lib/Stack';
 import { TextField, MaskedTextField } from 'office-ui-fabric-react/lib/TextField';
@@ -32,7 +32,7 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
       'Citation': ''
     }]
     const options: IDropdownOption[] = [
-      { key: '1', text: 'Tizio' }
+      { key: '1', text: 'Mock' }
     ];
     let columns = buildColumns(items);
     columns.forEach(_ => { _.isMultiline = true; _.isResizable = true })
@@ -83,6 +83,7 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
                 items={items}
                 setKey="set"
                 columns={columns}
+                selectionMode={SelectionMode.multiple}
                 ariaLabelForSelectionColumn="Toggle selection"
                 ariaLabelForSelectAllCheckbox="Toggle selection for all items" />
             </div>
