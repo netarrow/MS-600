@@ -1,13 +1,11 @@
 import * as React from 'react';
 import styles from './ListFullWidth.module.scss';
 import { IListFullWidthProps } from './IListFullWidthProps';
-import { escape } from '@microsoft/sp-lodash-subset';
 import { DetailsList, IColumn, buildColumns } from 'office-ui-fabric-react/lib/DetailsList';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown'
 import { IStackTokens, Stack } from 'office-ui-fabric-react/lib/Stack';
 import { TextField, MaskedTextField } from 'office-ui-fabric-react/lib/TextField';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { Separator } from 'office-ui-fabric-react/lib/Separator';
 import { Panel } from 'office-ui-fabric-react/lib/Panel'
 
 export default class ListFullWidth extends React.Component<IListFullWidthProps, { filtersOpen }> {
@@ -42,7 +40,21 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
     columns[7].maxWidth = 400
     columns[8].maxWidth = 400
 
-    let openFilterPanel = () => {  this.setState({filtersOpen: true }) }
+    let openFilterPanel = (value) => {  this.setState({filtersOpen: true }) }
+    let closeFilterPanel = (value) => {  this.setState({filtersOpen: false }) }
+
+    let startSearch = () => { alert('Mock, here will start search') }
+
+    let onRenderFooterContent = () => {
+      return (
+          <div>
+              <PrimaryButton onClick={closeFilterPanel} style={ {margin: 5 } }>
+                  Save
+              </PrimaryButton>
+              <DefaultButton onClick={closeFilterPanel} style={ {margin: 5 } }>Cancel</DefaultButton>
+          </div>
+      )
+  }
 
     const stackTokens: IStackTokens = { childrenGap: 20 };
     return (
@@ -50,20 +62,21 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
         <div className={ styles.container }>
           <div className={ styles.row }>
             <div className={ styles.column }>
-            <PrimaryButton text="Open Filters" onClick={openFilterPanel} width="300px" style={ {marginTop: 5} } />
+            <TextField placeholder="Search Query" />
+            <PrimaryButton text="Start Search" onClick={startSearch} width="300px" style={ {margin: 5, marginLeft: 0 } } />
+            <PrimaryButton text="Open Filters" onClick={openFilterPanel} width="300px" style={ {margin: 5, marginLeft: 0 } } />
             <PrimaryButton text="Export to Excel" width="300px" style={ {marginTop: 5} } />
-            <Panel  isOpen={this.state.filtersOpen}>
+            <Panel  isOpen={this.state.filtersOpen} onRenderFooterContent={onRenderFooterContent} isFooterAtBottom={true}
+                    headerText="Refine Results Here">
+
               <Stack tokens={stackTokens}>
                   <Dropdown
-                      placeholder="Select an option"
-                      label="Choose Applicant"
+                      placeholder="Applicant"
                       options={options}
                   />
-                  <TextField label="Pub. Number" />
-                  <TextField label="Archive" />
-                  <TextField label="Class" />
-                  <TextField label="Note" multiline rows={3} />
-                  <TextField label="Comment" multiline rows={3} />
+                  <Dropdown placeholder="Pub. Number" options={options} />
+                  <Dropdown placeholder="Archive" options={options} />
+                  <Dropdown placeholder="Class" options={options} />
               </Stack>
             </Panel>
             <DetailsList
