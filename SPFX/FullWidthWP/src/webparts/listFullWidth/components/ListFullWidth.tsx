@@ -7,15 +7,18 @@ import { IStackTokens, Stack } from 'office-ui-fabric-react/lib/Stack';
 import { TextField, MaskedTextField } from 'office-ui-fabric-react/lib/TextField';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel } from 'office-ui-fabric-react/lib/Panel'
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
-export default class ListFullWidth extends React.Component<IListFullWidthProps, { filtersOpen }> {
-
+export default class ListFullWidth extends React.Component<IListFullWidthProps, { filtersOpen, searchQuery }> {
+ctx: WebPartContext
   constructor(props) {
     super(props);
-
+    this.ctx = props.context
     // Define the initial state:
     this.state = {
-      filtersOpen: false
+      filtersOpen: false,
+      searchQuery: 'qq'
     };
   }
 
@@ -43,7 +46,15 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
     let openFilterPanel = (value) => {  this.setState({filtersOpen: true }) }
     let closeFilterPanel = (value) => {  this.setState({filtersOpen: false }) }
 
-    let startSearch = () => { alert('Mock, here will start search') }
+    let startSearch = () => {
+      this.ctx.spHttpClient.get(`${this.ctx.pageContext.web.absoluteUrl}/_api/search/query?querytext='${this.state.searchQuery}'`,
+                            SPHttpClient.configurations.v1)
+                            .then((res: SPHttpClientResponse): Promise<{ obj: any }> => {
+                              const jsonResponse = res.json();
+                              console.log( jsonResponse);
+                              return jsonResponse;
+                            })
+     }
 
     let onRenderFooterContent = () => {
       return (
@@ -57,6 +68,7 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
   }
 
     const stackTokens: IStackTokens = { childrenGap: 20 };
+
     return (
       <div className={ styles.listFullWidth }>
         <div className={ styles.container }>
@@ -66,7 +78,9 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
             <PrimaryButton text="Start Search" onClick={startSearch} width="300px" style={ {margin: 5, marginLeft: 0 } } />
             <PrimaryButton text="Open Filters" onClick={openFilterPanel} width="300px" style={ {margin: 5, marginLeft: 0 } } />
             <PrimaryButton text="Export to Excel" width="300px" style={ {marginTop: 5} } />
-            <Panel  isOpen={this.state.filtersOpen} onRenderFooterContent={onRenderFooterContent} isFooterAtBottom={true}
+            <Panel  isOpen={this.state.filtersOpen}
+                    onRenderFooterContent={onRenderFooterContent}
+                    isFooterAtBottom={true}
                     headerText="Refine Results Here">
 
               <Stack tokens={stackTokens}>

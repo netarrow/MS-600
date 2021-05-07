@@ -21,7 +21,8 @@ export default class ListFullWidthWebPart extends BaseClientSideWebPart<IListFul
     const element: React.ReactElement<IListFullWidthProps> = React.createElement(
       ListFullWidth,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        context: this.context
       }
     );
 
