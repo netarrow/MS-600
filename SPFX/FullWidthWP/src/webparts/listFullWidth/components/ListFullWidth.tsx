@@ -8,8 +8,19 @@ import { IStackTokens, Stack } from 'office-ui-fabric-react/lib/Stack';
 import { TextField, MaskedTextField } from 'office-ui-fabric-react/lib/TextField';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Separator } from 'office-ui-fabric-react/lib/Separator';
+import { Panel } from 'office-ui-fabric-react/lib/Panel'
 
-export default class ListFullWidth extends React.Component<IListFullWidthProps, {}> {
+export default class ListFullWidth extends React.Component<IListFullWidthProps, { filtersOpen }> {
+
+  constructor(props) {
+    super(props);
+
+    // Define the initial state:
+    this.state = {
+      filtersOpen: false
+    };
+  }
+
   public render(): React.ReactElement<IListFullWidthProps> {
     const items = [{
       'Publication Number': 'DE 122345',
@@ -31,26 +42,30 @@ export default class ListFullWidth extends React.Component<IListFullWidthProps, 
     columns[7].maxWidth = 400
     columns[8].maxWidth = 400
 
+    let openFilterPanel = () => {  this.setState({filtersOpen: true }) }
+
     const stackTokens: IStackTokens = { childrenGap: 20 };
     return (
       <div className={ styles.listFullWidth }>
         <div className={ styles.container }>
           <div className={ styles.row }>
             <div className={ styles.column }>
-            <Stack tokens={stackTokens}>
-                <Dropdown
-                    placeholder="Select an option"
-                    label="Choose Applicant"
-                    options={options}
-                />
-                <TextField label="Pub. Number" />
-                <TextField label="Archive" />
-                <TextField label="Class" />
-                <TextField label="Note" multiline rows={3} />
-                <TextField label="Comment" multiline rows={3} />
-            </Stack>
-            <PrimaryButton text="Filter" width="300px" style={ {marginTop: 5} } />
+            <PrimaryButton text="Open Filters" onClick={openFilterPanel} width="300px" style={ {marginTop: 5} } />
             <PrimaryButton text="Export to Excel" width="300px" style={ {marginTop: 5} } />
+            <Panel  isOpen={this.state.filtersOpen}>
+              <Stack tokens={stackTokens}>
+                  <Dropdown
+                      placeholder="Select an option"
+                      label="Choose Applicant"
+                      options={options}
+                  />
+                  <TextField label="Pub. Number" />
+                  <TextField label="Archive" />
+                  <TextField label="Class" />
+                  <TextField label="Note" multiline rows={3} />
+                  <TextField label="Comment" multiline rows={3} />
+              </Stack>
+            </Panel>
             <DetailsList
                 items={items}
                 setKey="set"
